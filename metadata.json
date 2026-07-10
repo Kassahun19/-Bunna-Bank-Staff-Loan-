@@ -1,0 +1,6 @@
+{
+  "name": "Staff Loan Calculator",
+  "description": "An elegant staff loan calculator for Bunna Bank, determining maximum loan eligibility, monthly payments, interest rates, and loan breakdowns based on internal lending policies.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

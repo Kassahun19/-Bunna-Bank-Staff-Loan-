@@ -1,0 +1,91 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
+  
+  --color-bunna-50: #fcfaf9;
+  --color-bunna-100: #f6f0ec;
+  --color-bunna-200: #ece0d6;
+  --color-bunna-300: #dfc6b7;
+  --color-bunna-400: #cfa691;
+  --color-bunna-500: #c2866b;
+  --color-bunna-600: #b46b4f;
+  --color-bunna-700: #96533d;
+  --color-bunna-800: #7a4534;
+  --color-bunna-900: #4a2b21;
+  --color-bunna-950: #271510;
+  --color-bunna-gold: #D4AF37;
+  --color-bunna-goldlight: #F3E5AB;
+}
+
+@layer base {
+  body {
+    background-color: #faf9f8;
+    background-image: 
+      radial-gradient(at 0% 0%, hsla(25, 30%, 95%, 1) 0, transparent 50%), 
+      radial-gradient(at 100% 0%, hsla(28, 40%, 92%, 1) 0, transparent 50%);
+    background-attachment: fixed;
+  }
+}
+
+/* Custom styles for range slider to match premium theme */
+input[type=range] {
+  -webkit-appearance: none;
+  width: 100%;
+  background: transparent;
+}
+
+input[type=range]:focus {
+  outline: none;
+}
+
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 22px;
+  width: 22px;
+  border-radius: 50%;
+  background: #ffffff;
+  cursor: pointer;
+  margin-top: -8px;
+  box-shadow: 0 4px 10px rgba(74, 43, 33, 0.25);
+  border: 3px solid #7a4534;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+input[type=range]::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  background: #fdfdfd;
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 6px;
+  cursor: pointer;
+  background: #e5e7eb;
+  border-radius: 999px;
+  border: 1px solid #f3f4f6;
+}
+
+/* Print layout optimizations */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  header, footer, button, input[type=range] {
+    display: none !important;
+  }
+  main {
+    display: block !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
+  .print-card {
+    border: 1px solid #ddd !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    color: black !important;
+  }
+}
+
