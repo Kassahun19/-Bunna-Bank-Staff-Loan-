@@ -5,6 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { AnimatedCountUp } from './components/AnimatedCountUp';
 import { 
   Building, 
   ShieldCheck, 
@@ -1007,7 +1008,7 @@ export default function App() {
               <div className="flex items-baseline flex-wrap gap-x-2 sm:gap-x-3 gap-y-1">
                 <span className="text-xl sm:text-3xl font-bold text-bunna-300">ETB</span>
                 <span className="text-3xl sm:text-5xl lg:text-6xl leading-none font-black text-white tracking-tight drop-shadow-md break-all">
-                  {formatCurrency(maxEligibleLoan)}
+                  <AnimatedCountUp value={maxEligibleLoan} formatter={formatCurrency} />
                 </span>
               </div>
 
@@ -1018,7 +1019,7 @@ export default function App() {
                     <span className="text-xs font-medium text-bunna-200">Requested Amount Selected:</span>
                   </div>
                   <span className="text-sm font-bold text-white">
-                    ETB {formatCurrency(requestedAmount)}
+                    ETB <AnimatedCountUp value={requestedAmount} formatter={formatCurrency} />
                   </span>
                 </div>
               )}
@@ -1033,7 +1034,7 @@ export default function App() {
           </div>
 
           {/* Core Monthly Payment & Interest Widgets */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             
             {/* Monthly Repayment Widget */}
             <div className="bg-white/90 backdrop-blur-md rounded-2xl sm:rounded-[2rem] shadow-lg shadow-slate-100/40 p-5 sm:p-7 border border-white hover:shadow-xl transition-shadow duration-300">
@@ -1047,7 +1048,7 @@ export default function App() {
               </div>
               <div className="flex items-baseline flex-wrap gap-1">
                 <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-                  {formatCurrency(monthlyPayment)}
+                  <AnimatedCountUp value={monthlyPayment} formatter={formatCurrency} />
                 </span>
                 <span className="text-xs sm:text-sm font-bold text-slate-400">/mo</span>
               </div>
@@ -1068,12 +1069,33 @@ export default function App() {
               </div>
               <div className="flex items-baseline flex-wrap gap-1">
                 <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-                  {formatCurrency(totalInterest)}
+                  <AnimatedCountUp value={totalInterest} formatter={formatCurrency} />
                 </span>
                 <span className="text-xs sm:text-sm font-bold text-slate-400">ETB</span>
               </div>
               <p className="text-[10px] sm:text-xs text-slate-400 font-medium mt-2 leading-relaxed">
                 Interest over {repaymentYears} years at {interestRate}%.
+              </p>
+            </div>
+
+            {/* Total Repayment Widget */}
+            <div className="bg-white/90 backdrop-blur-md rounded-2xl sm:rounded-[2rem] shadow-lg shadow-slate-100/40 p-5 sm:p-7 border border-white hover:shadow-xl transition-shadow duration-300 sm:col-span-2 lg:col-span-1">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xs sm:text-sm font-extrabold text-slate-500 uppercase tracking-wider">
+                  Total Repayment
+                </h3>
+                <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center border border-emerald-100/50">
+                  <Coins className="w-5 h-5 text-emerald-700" />
+                </div>
+              </div>
+              <div className="flex items-baseline flex-wrap gap-1">
+                <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                  <AnimatedCountUp value={totalRepayment} formatter={formatCurrency} />
+                </span>
+                <span className="text-xs sm:text-sm font-bold text-slate-400">ETB</span>
+              </div>
+              <p className="text-[10px] sm:text-xs text-slate-400 font-medium mt-2 leading-relaxed">
+                Total principal & interest combined.
               </p>
             </div>
           </div>
@@ -1112,7 +1134,7 @@ export default function App() {
                   <div>
                     <p className="text-xs font-bold text-slate-800">Principal Amount</p>
                     <p className="text-sm font-extrabold text-slate-900">
-                      ETB {formatCurrency(activeLoanAmount)}
+                      ETB <AnimatedCountUp value={activeLoanAmount} formatter={formatCurrency} />
                     </p>
                     <p className="text-[10px] text-slate-400 font-semibold">
                       {percentPrincipal.toFixed(1)}% of total repayment
@@ -1125,7 +1147,7 @@ export default function App() {
                   <div>
                     <p className="text-xs font-bold text-slate-800">Total Interest</p>
                     <p className="text-sm font-extrabold text-slate-900">
-                      ETB {formatCurrency(totalInterest)}
+                      ETB <AnimatedCountUp value={totalInterest} formatter={formatCurrency} />
                     </p>
                     <p className="text-[10px] text-slate-400 font-semibold">
                       {percentInterest.toFixed(1)}% of total repayment
@@ -1827,7 +1849,7 @@ export default function App() {
                           <p className="text-[10px] text-bunna-300 font-extrabold tracking-wider uppercase">Your Prioritization Score</p>
                           <div className="flex items-baseline gap-1.5 mt-1.5">
                             <span className="text-6xl sm:text-7xl font-black text-white leading-none tracking-tighter">
-                              {totalPriorityScore}
+                              <AnimatedCountUp value={totalPriorityScore} />
                             </span>
                             <span className="text-xl font-bold text-bunna-300">/ 100</span>
                           </div>
