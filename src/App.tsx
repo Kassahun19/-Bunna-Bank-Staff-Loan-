@@ -29,7 +29,8 @@ import {
   Award,
   AlertTriangle,
   Search,
-  Scale
+  Scale,
+  Coffee
 } from 'lucide-react';
 
 interface AmortizationYear {
@@ -735,10 +736,42 @@ export default function App() {
             </div>
           </div>
           
-          <div className="flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-bunna-50 border border-bunna-100 rounded-full text-xs sm:text-sm font-semibold text-bunna-800 shadow-sm">
-            <ShieldCheck className="w-4 h-4 text-bunna-600 flex-shrink-0" />
-            <span className="hidden sm:inline">Internal policy compliant</span>
-            <span className="sm:hidden">Compliant</span>
+          <div className="relative flex flex-col items-center select-none pt-2.5">
+            {/* Hanging ropes to make it literally a hanging sign */}
+            <div className="absolute top-[-18px] flex justify-between w-14 h-[18px] pointer-events-none">
+              <div className="w-[1.5px] bg-gradient-to-b from-slate-200 to-amber-700/60" />
+              <div className="w-[1.5px] bg-gradient-to-b from-slate-200 to-amber-700/60" />
+            </div>
+
+            {/* Animating swinging hanging sign */}
+            <motion.a
+              href="https://ye-buna.com/kassahunmulatu"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="relative flex items-center gap-2 px-3.5 py-2 sm:px-5 sm:py-2.5 bg-gradient-to-r from-amber-700 via-[#825330] to-amber-950 text-white rounded-xl text-xs sm:text-sm font-black shadow-md shadow-amber-950/15 hover:shadow-lg hover:shadow-amber-950/25 border-t border-amber-500/40 border-b border-amber-950/60 transition-all cursor-pointer group origin-top"
+              animate={{ 
+                rotate: [2, -2, 1.5, -1.5, 2],
+              }}
+              transition={{ 
+                duration: 5,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+              whileHover={{ 
+                scale: 1.05,
+                rotate: [-5, 5, -3, 3, 0],
+                transition: { duration: 0.5 }
+              }}
+            >
+              {/* Glowing notification dot */}
+              <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500"></span>
+              </span>
+
+              <Coffee className="w-4 h-4 text-amber-200 group-hover:animate-bounce transition-transform" />
+              <span className="tracking-wide">Buy me Coffee</span>
+            </motion.a>
           </div>
         </div>
       </header>
