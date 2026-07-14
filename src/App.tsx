@@ -43,13 +43,13 @@ interface AmortizationYear {
 
 export default function App() {
   // Input states
-  const [salary, setSalary] = useState<number>(15000);
-  const [interestRate, setInterestRate] = useState<number>(6.0);
-  const [repaymentYears, setRepaymentYears] = useState<number>(15);
+  const [salary, setSalary] = useState<number | ''>(15000);
+  const [interestRate, setInterestRate] = useState<number | ''>(6.0);
+  const [repaymentYears, setRepaymentYears] = useState<number | ''>(15);
   
   // Custom loan request mode & requested amount
   const [isCustomAmount, setIsCustomAmount] = useState<boolean>(false);
-  const [requestedAmount, setRequestedAmount] = useState<number>(1110000);
+  const [requestedAmount, setRequestedAmount] = useState<number | ''>(1110000);
 
   // Expanded UI panels
   const [showAmortization, setShowAmortization] = useState<boolean>(false);
@@ -78,7 +78,7 @@ export default function App() {
 
   // Priority scorecard states
   const [scoreWorkUnit, setScoreWorkUnit] = useState<'branch' | 'ho'>('branch');
-  const [scoreAppraisal, setScoreAppraisal] = useState<number>(105);
+  const [scoreAppraisal, setScoreAppraisal] = useState<number | ''>(105);
   const [scorePriorLoan, setScorePriorLoan] = useState<'none' | 'settled' | 'active'>('none');
   const [scoreJobCategory, setScoreJobCategory] = useState<'managerial' | 'non-managerial'>('non-managerial');
   const [scoreSatisfaction, setScoreSatisfaction] = useState<number>(15); // out of 20
@@ -86,19 +86,20 @@ export default function App() {
 
   // Prioritization scorecard calculations
   const calcAppraisalScore = () => {
+    const appraisalVal = typeof scoreAppraisal === 'number' ? scoreAppraisal : 0;
     if (scoreWorkUnit === 'branch') {
-      if (scoreAppraisal > 125) return 60;
-      if (scoreAppraisal > 100) return 55;
-      if (scoreAppraisal > 85) return 50;
-      if (scoreAppraisal > 75) return 45;
-      if (scoreAppraisal > 50) return 40;
+      if (appraisalVal > 125) return 60;
+      if (appraisalVal > 100) return 55;
+      if (appraisalVal > 85) return 50;
+      if (appraisalVal > 75) return 45;
+      if (appraisalVal > 50) return 40;
       return 0;
     } else {
-      if (scoreAppraisal > 95) return 40;
-      if (scoreAppraisal > 90) return 35;
-      if (scoreAppraisal > 85) return 30;
-      if (scoreAppraisal > 75) return 25;
-      if (scoreAppraisal > 50) return 20;
+      if (appraisalVal > 95) return 40;
+      if (appraisalVal > 90) return 35;
+      if (appraisalVal > 85) return 30;
+      if (appraisalVal > 75) return 25;
+      if (appraisalVal > 50) return 20;
       return 0;
     }
   };
@@ -131,8 +132,14 @@ export default function App() {
   // Current year for copyright
   const currentYear = new Date().getFullYear();
 
-  // Policy calculation
-  const maxEligibleLoan = (salary / 2) * 148;
+  // Numerical fallback values for robust calculation (prevents "unremovable zero" issues and NaN)
+  const numSalary = typeof salary === 'number' ? salary : 0;
+  const numInterestRate = typeof interestRate === 'number' ? interestRate : 0;
+  const numRepaymentYears = typeof repaymentYears === 'number' ? repaymentYears : 0;
+  const numRequestedAmount = typeof requestedAmount === 'number' ? requestedAmount : 0;
+
+  // Policy calculation: (Gross salary / 2) * 142
+  const maxEligibleLoan = (numSalary / 2) * 142;
 
   // Sync requested amount when policy maximum changes or mode is switched
   useEffect(() => {
@@ -140,17 +147,17 @@ export default function App() {
       setRequestedAmount(maxEligibleLoan);
     } else {
       // Ensure requested amount is within valid boundaries
-      if (requestedAmount > maxEligibleLoan) {
+      if (numRequestedAmount > maxEligibleLoan) {
         setRequestedAmount(maxEligibleLoan);
       }
     }
   }, [salary, isCustomAmount, maxEligibleLoan]);
 
   // Calculations based on requested amount (or max loan if not in custom mode)
-  const activeLoanAmount = isCustomAmount ? requestedAmount : maxEligibleLoan;
+  const activeLoanAmount = isCustomAmount ? numRequestedAmount : maxEligibleLoan;
 
-  const monthlyRate = (interestRate / 100) / 12;
-  const totalMonths = repaymentYears * 12;
+  const monthlyRate = (numInterestRate / 100) / 12;
+  const totalMonths = numRepaymentYears * 12;
 
   let monthlyPayment = 0;
   if (activeLoanAmount > 0 && totalMonths > 0) {
@@ -169,7 +176,7 @@ export default function App() {
   const amortizationSchedule: AmortizationYear[] = [];
   let remainingBalance = activeLoanAmount;
 
-  for (let year = 1; year <= repaymentYears; year++) {
+  for (let year = 1; year <= numRepaymentYears; year++) {
     let yearPrincipalPaid = 0;
     let yearInterestPaid = 0;
     let yearPayment = 0;
@@ -399,7 +406,7 @@ export default function App() {
                   <strong className="text-slate-800 font-bold">The 50% Salary Rule:</strong> Monthly repayments (Principal + Interest) shall never exceed 50% of the employee's gross monthly salary.
                 </li>
                 <li>
-                  <strong className="text-slate-800 font-bold">The Multiple Rule:</strong> The maximum total facility size shall be capped at exactly <strong className="text-bunna-800 font-extrabold">74 times</strong> the gross monthly salary (or equivalently, 148 times half-salary).
+                  <strong className="text-slate-800 font-bold">The Multiple Rule:</strong> The maximum total facility size shall be capped at exactly <strong className="text-bunna-800 font-extrabold">71 times</strong> the gross monthly salary (or equivalently, 142 times half-salary).
                 </li>
               </ul>
             </div>
@@ -814,7 +821,10 @@ export default function App() {
                     min={2000}
                     max={500000}
                     step={1000}
-                    onChange={(e) => setSalary(Math.max(0, parseFloat(e.target.value) || 0))}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setSalary(val === '' ? '' : (parseFloat(val) || 0));
+                    }}
                     className="w-full pl-10 pr-4 py-2 sm:py-2.5 bg-transparent border-none text-xl sm:text-2xl font-extrabold text-slate-900 focus:outline-none focus:ring-0"
                   />
                 </div>
@@ -825,11 +835,11 @@ export default function App() {
                     min={2000} 
                     max={200000} 
                     step={1000} 
-                    value={salary} 
+                    value={numSalary} 
                     onChange={(e) => setSalary(parseFloat(e.target.value))}
                     className="w-full cursor-pointer accent-bunna-700"
                     style={{
-                      background: `linear-gradient(to right, #7a4534 0%, #7a4534 ${Math.min(100, ((salary - 2000) / (200000 - 2000)) * 100)}%, #e5e7eb ${Math.min(100, ((salary - 2000) / (200000 - 2000)) * 100)}%, #e5e7eb 100%)`,
+                      background: `linear-gradient(to right, #7a4534 0%, #7a4534 ${Math.min(100, ((numSalary - 2000) / (200000 - 2000)) * 100)}%, #e5e7eb ${Math.min(100, ((numSalary - 2000) / (200000 - 2000)) * 100)}%, #e5e7eb 100%)`,
                       height: '6px',
                       borderRadius: '999px'
                     }}
@@ -860,7 +870,10 @@ export default function App() {
                     min={0}
                     max={25}
                     step={0.1}
-                    onChange={(e) => setInterestRate(Math.min(25, Math.max(0, parseFloat(e.target.value) || 0)))}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setInterestRate(val === '' ? '' : Math.min(25, parseFloat(val) || 0));
+                    }}
                     className="w-full px-2 py-2 sm:py-2.5 bg-transparent border-none text-xl sm:text-2xl font-extrabold text-slate-900 focus:outline-none focus:ring-0"
                   />
                   <span className="absolute right-3 text-slate-400 font-extrabold text-lg sm:text-xl">%</span>
@@ -872,11 +885,11 @@ export default function App() {
                     min={0} 
                     max={25} 
                     step={0.5} 
-                    value={interestRate} 
+                    value={numInterestRate} 
                     onChange={(e) => setInterestRate(parseFloat(e.target.value))}
                     className="w-full cursor-pointer accent-bunna-700"
                     style={{
-                      background: `linear-gradient(to right, #7a4534 0%, #7a4534 ${(interestRate / 25) * 100}%, #e5e7eb ${(interestRate / 25) * 100}%, #e5e7eb 100%)`,
+                      background: `linear-gradient(to right, #7a4534 0%, #7a4534 ${(numInterestRate / 25) * 100}%, #e5e7eb ${(numInterestRate / 25) * 100}%, #e5e7eb 100%)`,
                       height: '6px',
                       borderRadius: '999px'
                     }}
@@ -907,7 +920,10 @@ export default function App() {
                     min={1}
                     max={40}
                     step={1}
-                    onChange={(e) => setRepaymentYears(Math.max(1, parseInt(e.target.value) || 1))}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setRepaymentYears(val === '' ? '' : (parseInt(val) || 0));
+                    }}
                     className="w-full px-2 py-2 sm:py-2.5 bg-transparent border-none text-xl sm:text-2xl font-extrabold text-slate-900 focus:outline-none focus:ring-0"
                   />
                   <span className="absolute right-3 text-slate-400 font-bold text-sm sm:text-base">Years</span>
@@ -919,11 +935,11 @@ export default function App() {
                     min={1} 
                     max={30} 
                     step={1} 
-                    value={repaymentYears} 
+                    value={numRepaymentYears} 
                     onChange={(e) => setRepaymentYears(parseInt(e.target.value))}
                     className="w-full cursor-pointer accent-bunna-700"
                     style={{
-                      background: `linear-gradient(to right, #7a4534 0%, #7a4534 ${((repaymentYears - 1) / 29) * 100}%, #e5e7eb ${((repaymentYears - 1) / 29) * 100}%, #e5e7eb 100%)`,
+                      background: `linear-gradient(to right, #7a4534 0%, #7a4534 ${((numRepaymentYears - 1) / 29) * 100}%, #e5e7eb ${((numRepaymentYears - 1) / 29) * 100}%, #e5e7eb 100%)`,
                       height: '6px',
                       borderRadius: '999px'
                     }}
@@ -991,8 +1007,8 @@ export default function App() {
                           min={10000}
                           max={maxEligibleLoan}
                           onChange={(e) => {
-                            const val = parseFloat(e.target.value) || 0;
-                            setRequestedAmount(Math.min(maxEligibleLoan, val));
+                            const val = e.target.value;
+                            setRequestedAmount(val === '' ? '' : Math.min(maxEligibleLoan, parseFloat(val) || 0));
                           }}
                           className="w-full pl-8 pr-3 py-1.5 bg-transparent border-none text-xl font-extrabold text-slate-900 focus:outline-none focus:ring-0"
                         />
@@ -1003,11 +1019,11 @@ export default function App() {
                         min={10000}
                         max={maxEligibleLoan}
                         step={5000}
-                        value={requestedAmount}
+                        value={numRequestedAmount}
                         onChange={(e) => setRequestedAmount(parseFloat(e.target.value))}
                         className="w-full accent-bunna-700 cursor-pointer"
                         style={{
-                          background: `linear-gradient(to right, #7a4534 0%, #7a4534 ${((requestedAmount - 10000) / (maxEligibleLoan - 10000)) * 100}%, #e5e7eb ${((requestedAmount - 10000) / (maxEligibleLoan - 10000)) * 100}%, #e5e7eb 100%)`,
+                          background: `linear-gradient(to right, #7a4534 0%, #7a4534 ${((numRequestedAmount - 10000) / (maxEligibleLoan - 10000)) * 100}%, #e5e7eb ${((numRequestedAmount - 10000) / (maxEligibleLoan - 10000)) * 100}%, #e5e7eb 100%)`,
                           height: '4px',
                           borderRadius: '999px'
                         }}
@@ -1712,7 +1728,10 @@ export default function App() {
                           min={0}
                           max={150}
                           value={scoreAppraisal}
-                          onChange={(e) => setScoreAppraisal(Math.min(150, Math.max(0, parseInt(e.target.value) || 0)))}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setScoreAppraisal(val === '' ? '' : Math.min(150, Math.max(0, parseInt(val) || 0)));
+                          }}
                           className="w-full px-4 py-2 rounded-xl border border-slate-200 text-xs font-extrabold text-slate-900 focus:outline-none focus:ring-2 focus:ring-bunna-700"
                         />
                         <div className="text-[10px] text-slate-400 font-semibold leading-relaxed">
